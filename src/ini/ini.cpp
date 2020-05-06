@@ -114,7 +114,7 @@ namespace ini {
     vector<option> options;
     set<string> sections;
     if (curr.type == ident) {
-      vector<option> os = parse_section("");
+      vector<option> os = parse_section("default");
       options.insert(options.end(), os.begin(), os.end());
     }
     while(!scan.done()) {
