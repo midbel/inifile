@@ -51,6 +51,7 @@ namespace ini {
     tok.pos = where(); // {line, column};
 
     switch (last) {
+      case mk::semicolon:
       case mk::pound:
       scan_comment(tok);
       break;
