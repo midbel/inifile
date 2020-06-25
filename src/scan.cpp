@@ -1,20 +1,17 @@
-#include <string>
 #include <algorithm>
 #include "scan.h"
 
-using namespace std;
-
 namespace ini {
 
-  scanner::scanner(string file) {
-    ifstream in(file.c_str(), ios::in);
+  scanner::scanner(std::string file) {
+    std::ifstream in(file.c_str(), std::ios::in);
     if (!in) {
       throw "fail to open file "+file;
     }
     buffer << in.rdbuf();
     in.close();
 
-    string str = buffer.str();
+    std::string str = buffer.str();
     str.erase(remove(str.begin(), str.end(), mk::carriage), str.end());
     buffer.str(str);
 
@@ -85,7 +82,7 @@ namespace ini {
   }
 
   void scanner::scan_ident(token& tok) {
-    ostringstream str;
+    std::ostringstream str;
     if (!mk::is_letter(last)) {
       throw scanner_exception("ident", "invalid character "+last);
     }
@@ -111,7 +108,7 @@ namespace ini {
 
   void scanner::scan_quote(token& tok, char quote) {
     get();
-    ostringstream str;
+    std::ostringstream str;
     while(last != quote) {
       if (done()) {
         throw scanner_exception("quoted", "unexpected end of file");
@@ -124,7 +121,7 @@ namespace ini {
   }
 
   void scanner::scan_value(token& tok) {
-    ostringstream str;
+    std::ostringstream str;
     str.put(last);
     while(!done()) {
       get();
@@ -140,7 +137,7 @@ namespace ini {
   void scanner::scan_header(token& tok) {
     get();
 
-    ostringstream str;
+    std::ostringstream str;
     skip_blanks();
     if (!mk::is_letter(last)) {
       throw scanner_exception("header", "invalid character");
@@ -164,7 +161,7 @@ namespace ini {
   }
 
   void scanner::scan_comment(token& tok) {
-    ostringstream str;
+    std::ostringstream str;
     skip_blanks();
     while(last != mk::newline && !done()) {
       str.put(last);

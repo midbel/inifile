@@ -4,9 +4,6 @@
 #include <exception>
 #include <fstream>
 #include <sstream>
-#include <string>
-
-using namespace std;
 
 namespace ini {
   namespace mk {
@@ -55,7 +52,7 @@ namespace ini {
 
   enum token_type {eof, header, ident, literal, number, boolean, assign, comment};
 
-  inline string to_string(token_type tt) {
+  inline std::string to_string(token_type tt) {
     switch (tt) {
       case eof: return "eof";
       case header: return "header";
@@ -72,8 +69,8 @@ namespace ini {
   struct position {
     int line;
     int column;
-    string to_string() {
-      ostringstream str;
+    std::string to_string() {
+      std::ostringstream str;
       str << line;
       str << ":";
       str << column;
@@ -87,19 +84,19 @@ namespace ini {
 
   struct token {
     token_type type;
-    string literal;
+    std::string literal;
     position pos;
   };
 
-  class scanner_exception: public exception {
+  class scanner_exception: public std::exception {
   private:
-    string where;
-    string reason;
+    std::string where;
+    std::string reason;
   public:
-    scanner_exception(string w, string r): where(w), reason(r) {}
+    scanner_exception(std::string w, std::string r): where(w), reason(r) {}
     virtual ~scanner_exception() throw() {}
     virtual const char* what() const throw() {
-      ostringstream str;
+      std::ostringstream str;
       str << "scanning " << where << ": " << reason << "!!!";
       return str.str().c_str();
     }
@@ -107,13 +104,13 @@ namespace ini {
 
   class scanner {
   public:
-    scanner(string file);
+    scanner(std::string file);
     token scan();
     bool done();
     position where();
 
   private:
-    stringstream buffer;
+    std::stringstream buffer;
     int line;
     int column;
     int length;

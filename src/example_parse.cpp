@@ -2,7 +2,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "scan.h"
 #include "ini.h"
 
 using namespace std;

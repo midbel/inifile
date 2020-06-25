@@ -1,12 +1,9 @@
 #include <vector>
 #include <set>
-#include <string>
-#include <cstdlib>
 #include <iostream>
 #include "scan.h"
 #include "ini.h"
 
-using namespace std;
 
 namespace ini {
 
@@ -17,52 +14,50 @@ namespace ini {
     scanner scan;
 
   public:
-    parser(string file): scan(file) {
+    parser(std::string file): scan(file) {
         next();
         next();
 
     };
-    vector<option> parse_ini();
+    std::vector<option> parse_ini();
   private:
-    vector<option> parse_section(string label);
-    option parse_option(string label);
+    std::vector<option> parse_section(std::string label);
+    option parse_option(std::string label);
     void next();
   };
 
-  config::config(string file) {
+  config::config(std::string file) {
     options = parse(file);
   }
 
-  string config::get_string(string section, string name) {
+  std::string config::get_string(std::string section, std::string name) {
     option o = get_option(section, name);
     return o.value;
   }
 
-  string config::get_string(string name) {
+  std::string config::get_string(std::string name) {
     return get_string("", name);
   }
 
-  int config::get_int(string section, string name) {
+  int config::get_int(std::string section, std::string name) {
     option o = get_option(section, name);
-    return atoi(o.value.c_str());
-    // return stoi(o.value);
+    return std::stoi(o.value);
   }
 
-  int config::get_int(string name) {
+  int config::get_int(std::string name) {
     return get_int("", name);
   }
 
-  double config::get_double(string section, string name) {
+  double config::get_double(std::string section, std::string name) {
     option o = get_option(section, name);
-    return atof(o.value.c_str());
-    // return stod(o.value);
+    return std::stod(o.value);
   }
 
-  double config::get_double(string name) {
+  double config::get_double(std::string name) {
     return get_double("", name);
   }
 
-  bool config::get_bool(string section, string name) {
+  bool config::get_bool(std::string section, std::string name) {
     option o = get_option(section, name);
     if (o.value == "" || o.value == "0" || o.value == "false") {
       return false;
@@ -70,11 +65,11 @@ namespace ini {
     return true;
   }
 
-  bool config::get_bool(string name) {
+  bool config::get_bool(std::string name) {
     return get_bool("", name);
   }
 
-  bool config::has_section(string section) {
+  bool config::has_section(std::string section) {
     for (int i = 0; i < options.size(); i++) {
       option o = options[i];
       if (o.section == section) {
@@ -84,7 +79,7 @@ namespace ini {
     return false;
   }
 
-  bool config::has_option(string section, string name) {
+  bool config::has_option(std::string section, std::string name) {
     for (int i = 0; i < options.size(); i++) {
       option o = options[i];
       if (o.section == section && o.name == name) {
@@ -94,7 +89,7 @@ namespace ini {
     return false;
   }
 
-  option config::get_option(string section, string name) {
+  option config::get_option(std::string section, std::string name) {
     for (int i = 0; i < options.size(); i++) {
       option o = options[i];
       if (o.section == section && o.name == name) {
@@ -104,37 +99,37 @@ namespace ini {
     throw not_found(section, name);
   }
 
-  vector<option> config::parse(string file) {
-    vector<option> options;
+  std::vector<option> config::parse(std::string file) {
+    std::vector<option> options;
     parser ps(file);
     return ps.parse_ini();
   }
 
-  vector<option> parser::parse_ini() {
-    vector<option> options;
-    set<string> sections;
+  std::vector<option> parser::parse_ini() {
+    std::vector<option> options;
+    std::set<std::string> sections;
     if (curr.type == ident) {
-      vector<option> os = parse_section("default");
+      std::vector<option> os = parse_section("default");
       options.insert(options.end(), os.begin(), os.end());
     }
     while(!scan.done()) {
       if (curr.type != header) {
         throw unexpected_token(curr.pos, header, curr.type);
       }
-      string label = curr.literal;
+      std::string label = curr.literal;
       if (sections.find(label) != sections.end()) {
         throw duplicate(label, "section");
       }
       next();
-      vector<option> os = parse_section(label);
+      std::vector<option> os = parse_section(label);
       options.insert(options.end(), os.begin(), os.end());
     }
     return options;
   }
 
-  vector<option> parser::parse_section(string label) {
-    vector<option> options;
-    set<string> labels;
+  std::vector<option> parser::parse_section(std::string label) {
+    std::vector<option> options;
+    std::set<std::string> labels;
     while (curr.type != header && !scan.done()) {
       option opt = parse_option(label);
       if (labels.find(opt.name) != labels.end()) {
@@ -146,7 +141,7 @@ namespace ini {
     return options;
   }
 
-  option parser::parse_option(string section) {
+  option parser::parse_option(std::string section) {
     option opt;
     if (curr.type != ident) {
       throw unexpected_token(curr.pos, ident, curr.type);
